@@ -13,13 +13,14 @@ pub fn main() void
     var Lambda = createLambda(
         .{ .a = a, .b = &b, }, 
     struct {
-        fn func(lambdaHandle: var) i32 
+        fn func(self: var) i32 
         { 
-            const closure = lambdaHandle.closure; 
+            const closure = self.closure; 
 
             return closure.a + closure.b.*; 
         }
-    }.func);
+    }.func
+    );
 
     var err = stdout.print("{}\n", .{ Lambda.func() });
 
@@ -31,13 +32,14 @@ pub fn main() void
     var Lambda2 = createLambda(
         .{ .b = &b, }, 
     struct {
-        fn func(lambdaHandle: var, a2: i32) i32 
+        fn func(self: var, a2: i32) i32 
         { 
-            const closure = lambdaHandle.closure; 
+            const closure = self.closure; 
 
             return a2 + closure.b.*; 
         }
-    }.func);
+    }.func
+    );
 
     err = stdout.print("{}\n", .{ Lambda2.func(40) });
 
@@ -45,4 +47,3 @@ pub fn main() void
 
     err = stdout.print("{}\n", .{ Lambda2.func(40) });
 }
-
