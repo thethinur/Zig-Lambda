@@ -4,7 +4,7 @@ const assert = std.debug.assert;
 const lambda = @import("lambda/lambda.zig");
 const createLambda = lambda.createLambda;
 
-pub fn main() void
+pub fn main() !void
 {
     const stdout = std.io.getStdOut().outStream();
 
@@ -23,12 +23,12 @@ pub fn main() void
     }
     );
 
-    var err = stdout.print("{}\n", .{ lambda1.call(.{}) });
+    try stdout.print("{}\n", .{ lambda1.call(.{}) });
 
     a = 30;
     b = 30;
 
-    err = stdout.print("{}\n", .{ lambda1.call(.{}) });
+    try stdout.print("{}\n", .{ lambda1.call(.{}) });
 
     var lambda2 = createLambda(
         .{ .b = &b, }, 
@@ -42,9 +42,9 @@ pub fn main() void
     }
     );
 
-    err = stdout.print("{}\n", .{ lambda2.call(.{40}) });
+    try stdout.print("{}\n", .{ lambda2.call(.{40}) });
 
     b = 40;
 
-    err = stdout.print("{}\n", .{ lambda2.call(.{40}) });
+    try stdout.print("{}\n", .{ lambda2.call(.{40}) });
 }
