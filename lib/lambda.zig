@@ -1,30 +1,27 @@
 const std = @import("std");
 const eql = std.mem.eql;
 
-fn CreateLambdaT(comptime closureT: type, comptime Struct: type) type {
+fn isFuncT(comptime T: type) type {
+    return @typeInfo(T) == .Function;
+}
+
+fn ReturnType(comptime func: type) type {
+    if (isFuncT(func)) 
+        return @typeInfo(func).Function.return_type
+    else 
+        @compileError("Not a func");
+}
+
+fn LambdaT(comptime closureT: type, comptime func: var) type {
     return struct {
         closure: closureT,
-        pub fn call(self: @This(), args: var) Struct.ReturnType {
+        pub fn call(self: @This(), args: var) ReturnType(@TypeOf(func)) {
             return @call(.{}, Struct.func, .{ self.closure } ++ args);
         }
     };
 }
 
-pub fn createLambda(closure: var, comptime Struct: var) CreateLambdaT(@TypeOf(closure), Struct) {
-
-    comptime {
-        if (@hasDecl(Struct, "Func")){
-            @compileError("function: 'Func' missing from Lambda Declaration");
-        }
-        if (@hasDecl(Struct, "ReturnType")){
-            @compileError("type: ReturnType missing from Lambda Declaration");
-        }
-        if (@typeInfo(@TypeOf(closure)) != .Struct) {
-            @compileError("closure is not a struct");
-        }
-    }
-    
-    const LambdaT = CreateLambdaT(@TypeOf(closure),  Struct);
-
+pub fn lambda(closure: var, comptime func: var) LambdaT(@TypeOf(closure), func) {
+    const LambdaT = LambdaT(@TypeOf(closure),  func);
     return LambdaT { .closure = closure };
 }
